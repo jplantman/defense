@@ -1,21 +1,19 @@
 class Enemy extends Phaser.GameObjects.Image {
-  constructor(scene) {
+  constructor(scene, x, y) {
 
 
     super(scene, 64 * 6 + 32, 64 * 10, 'ball');
-
     this.scene = scene;
     this.level = scene.level;
-    this.path = scene.path;
     this
       .setScale(1 / 8)
-      .setTint(0xE83C3B)
+      // .setTint(pathData.color) // 0xE83C3B
       .setSize(32, 32);
 
     this.damageDealt = 1;
-    this.hp = 20;
+    this.hp = 0;
     this.expReward = 5;
-    this.enemySpeed = 1/10000;
+    this.enemySpeed = 0;
     this.follower = { t: 0, vec: new Phaser.Math.Vector2() };
 
     // tween fade
@@ -42,10 +40,13 @@ class Enemy extends Phaser.GameObjects.Image {
       .setVisible(false);
   }
 
-  reenable() {
+  enable(pathIndex) {
     // reset enemy
-    this.hp = 20;
-    this.enemySpeed = 1/10000;
+    this.pathIndex = pathIndex;
+    this.setTint( this.level.paths[pathIndex].color );
+    this.path = this.scene.paths[pathIndex];
+    this.hp = 80;
+    this.enemySpeed = 1 / 100000;
     this.follower.t = 0;
 
     // get x and y at t == 0

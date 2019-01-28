@@ -9,8 +9,7 @@ class BootScene extends Phaser.Scene {
   }
 
   create() {
-    // TODO - change this back to 'Preload'
-    this.scene.start('Game');
+    this.scene.start('Preload');
   }
 
 }

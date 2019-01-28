@@ -1,8 +1,6 @@
 class Base extends Phaser.GameObjects.Image {
-  constructor(scene){
-    
-
-    super(scene, 64*6+32, 64*10, 'ball');
+  constructor(scene, x, y){
+    super(scene, x, y, 'ball');
 
     this.scene = scene;
     this.level = scene.level;

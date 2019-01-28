@@ -7,6 +7,8 @@ class GameScene extends Phaser.Scene {
   //   console.log('gameScene');
   // }
   init() {
+
+    // this.input.setDefaultCursor('url(assets/ball2.png)');
     
     this.level = this.getLevel();
     this.level.grid = [];
@@ -29,55 +31,26 @@ class GameScene extends Phaser.Scene {
 
   create() {
     console.log(this);
-  
+
     this.camSprite = this.physics.add.sprite( 
       this.cameras.main.midPoint.x,
       this.cameras.main.midPoint.y,
       'ball')
       .setSize(this.cameras.main.width, this.cameras.main.height)
       .setVisible(false);
-    this.cameras.main.startFollow(this.camSprite)
+    this.cameras.main.startFollow(this.camSprite);
 
     this.createPath();
-    // this.showClickLocation();
-    this.createCursor();
     this.createBase();
     this.createGroups();
     this.setupCollisions();
+    this.controls = new Controls(this);
 
-    this.wKey = this.input.keyboard.addKey('w');
-    this.aKey = this.input.keyboard.addKey('a');
-    this.sKey = this.input.keyboard.addKey('s');
-    this.dKey = this.input.keyboard.addKey('d');
   }
 
   update(time, delta) {
     this.makeEnemies(time);
-    // move camera
-    let camVel = 100;
-    if ( this.aKey.isDown ){
-      this.camSprite.setVelocityX(-camVel);
-    } 
-    else if (this.dKey.isDown ) {
-      this.camSprite.setVelocityX(camVel);
-    }
-    else {
-      this.camSprite.setVelocityX(0);
-    }
-    if (this.wKey.isDown ) {
-      this.camSprite.setVelocityY(-camVel);
-    }
-    else if (this.sKey.isDown ) {
-      this.camSprite.setVelocityY(camVel);
-    } else {
-      this.camSprite.setVelocityY(0);
-    }
-    // bounds for camera sprite helper
-    this.camSprite.x = Math.max(this.camSprite.x, this.cameras.main.width / 2 );
-    this.camSprite.x = Math.min(this.camSprite.x, this.physics.world.bounds.width - this.cameras.main.width / 2);
-
-    this.camSprite.y = Math.max(this.camSprite.y, this.cameras.main.height / 2);
-    this.camSprite.y = Math.min(this.camSprite.y, this.physics.world.bounds.height - this.cameras.main.height / 2); 
+    this.controls.updateCamera();
   }
 
   createGroups() {
@@ -101,11 +74,13 @@ class GameScene extends Phaser.Scene {
   }
 
   damageEnemies(bullet, enemy) {
-    let cash = enemy.takeDamage( bullet.damageDealt );
+    let exp = enemy.takeDamage( bullet.damageDealt );
     bullet.disable();
-    if (cash){
-      this.base.cash += 5;
-      this.events.emit('updateCash', this.base.cash);
+    if (exp){
+      this.base.exp += 5;
+      this.events.emit('updateExp', this.base.exp);
+      bullet.firedBy.kills++;
+      // console.log('turret id : kills', bullet.firedBy.id, bullet.firedBy.kills )
     }
   }
 
@@ -118,64 +93,83 @@ class GameScene extends Phaser.Scene {
   // TODO - add json level loading
   getLevel() {
     return {
-      grid: [
-        [0, 5, 0, 0, 0, 0, 0, 0, 0, 0], //0    // 5 == start
-        [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], //1    // 7 == turn
-        [0, 1, 0, 7, 1, 1, 1, 1, 7, 0], //2   // 8 == end
-        [0, 1, 0, 1, 0, 0, 0, 0, 1, 0], //3
-        [0, 1, 0, 1, 0, 0, 0, 0, 1, 0], //4
-        [0, 1, 0, 1, 0, 0, 7, 1, 7, 0], //5
-        [0, 7, 1, 7, 0, 0, 1, 0, 0, 0], //6
-        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], //7
-        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], //8
-        [0, 0, 0, 0, 0, 0, 8, 0, 0, 0]  //9
-      ],//  1  2  3  4  5  6  7  8  9
-      points: [
-        [1, -1],
-        [1, 6],
-        [3, 6],
-        [3, 2],
-        [8, 2],
-        [8, 5],
-        [6, 5],
-        [6, 10]
+      paths: [
+        {
+          color: "0xFFAE4D", // orange
+          points: [
+            [800, -64],
+            [600, 1000],
+            [1000, 600],
+            [700, 1300],
+            [1300, 1000],
+            [1280, 1280]
+          ]
+        },
+        {
+          color: "0xE83C3B", // red
+          points: [
+            [2600, 2100],
+            [2300, 1800],
+            [1900, 2100],
+            // [1800, 2000],
+            [1750, 1900],
+            [2000, 1500],
+            [1700, 1300],
+            [1500, 1300],
+            [1500, 1500],
+            [1400, 1500],
+            [1280, 1280]
+          ]
+        },
+        {
+          color: "0x008F02", // green
+          points: [
+            [-100, 1900],
+            [300, 1800],
+            [300, 1400],
+            [500, 1500],
+            [600, 1300],
+            [800, 1700],
+            [1100, 1500],
+            [1100, 1300],
+            [1280, 1280]
+          ]
+        },
+        {
+          color:  "0xE8DB3B", // yellow
+          points: [
+            [2600, 200],
+            [2400, 400],
+            [2100, 300],
+            [2100, 800],
+            [1800, 700],
+            [1900, 1000],
+            [1600, 1000],
+            [1600, 1100],
+            [1600, 1100],
+            [1400, 1100],
+            [1400, 1300],
+            [1280, 1280]
+          ]
+        }
       ],
       scaleFactor: 4
     };
   }
 
   createBase() {
-    this.base = new Base(this)
-  }
+    this.base = new Base(
+      this, 
+      this.level.scaleFactor * 320, 
+      this.level.scaleFactor * 320);
 
-  createCursor() {
-    this.cursor = this.add.image(32, 32, 'ball')
-      .setScale(1.3/4)
-      .setTint(0xE8DB3B)  //0x008F02)
-      .setAlpha(0);
-
-    this.input.on('pointermove', function (pointer) {
-      var i = Math.floor((pointer.y + this.cameras.main.scrollY) / 64); //  - this.cameras.main.x
-      var j = Math.floor((pointer.x + this.cameras.main.scrollX) / 64); //  - this.cameras.main.y
-
-      if (this.canPlaceTurret(i, j)) {
-        this.cursor.setPosition(j * 64 + 32, i * 64 + 32)
-          .setAlpha(0.4);
-      } else {
-        this.cursor.setAlpha(0);
-      }
-    }.bind(this))
-
-    this.input.on('pointerdown', this.clickFunc.bind(this))
-  }
-
-  clickFunc(pointer) {
-    this.placeTurret(pointer);
+    this.camSprite.x = this.base.x;
+    this.camSprite.y = this.base.y;
   }
 
   placeTurret(pointer) {
-    var i = Math.floor((pointer.y + this.cameras.main.scrollY) / 64);
-    var j = Math.floor((pointer.x + this.cameras.main.scrollX) / 64);
+    var i = Math.floor((pointer.worldY) / 64);
+    var j = Math.floor((pointer.worldX) / 64); 
 
     if (this.canPlaceTurret(i, j)) {
       var turret = this.turrets.getFirstDead();
@@ -196,27 +190,26 @@ class GameScene extends Phaser.Scene {
   }
 
   createPath() {
-    this.graphics = this.add.graphics();
-    this.path = this.add.path(
-      this.level.points[0][0] * 64 + 32, 
-      this.level.points[0][1] * 64 + 32);
+    this.paths = [];
+    for (let k = 0; k < this.level.paths.length; k++) {
+      const pathData = this.level.paths[k];
+      let graphic = this.add.graphics();
+      this.paths[k] = this.add.path(
+        pathData.points[0][0],
+        pathData.points[0][1]);
 
-    for (let i = 1; i < this.level.points.length; i++) {
-      // console.log(i, this.level.points[i])
-      this.path.lineTo(
-        this.level.points[i][0] * 64 + 32, 
-        this.level.points[i][1] * 64 + 32);
+      for (let i = 1; i < pathData.points.length; i++) {
+        // console.log(i, this.level.points[i])
+        this.paths[k].lineTo(
+          pathData.points[i][0],
+          pathData.points[i][1]);
+      }
+      graphic.lineStyle(3, pathData.color, 1); // 0xFFAE4D
+      this.paths[k].draw(graphic);
     }
-    this.graphics.lineStyle(3, 0xFFAE4D, 1);
-    this.path.draw(this.graphics);
-  
-  }
 
-  showClickLocation(){
-    this.input.on('pointerdown', function(pointer){
-      console.log('X: '+pointer.x);
-      console.log('Y: ' + pointer.y);
-    });
+    
+  
   }
 
   getEnemy(x, y, distance) {
@@ -233,7 +226,8 @@ class GameScene extends Phaser.Scene {
     if (time > this.nextEnemy) {
       var enemy = this.enemies.getFirstDead();
       if (!enemy) {
-        enemy = new Enemy(this, 0, 0, this.path);
+        
+        enemy = new Enemy(this, 0, 0);
         this.enemies.add(enemy);
       }
 
@@ -243,20 +237,21 @@ class GameScene extends Phaser.Scene {
           .setVisible(true);
 
         // place at start of path
-        enemy.reenable();
+        let pathIndex = Math.floor(Math.random() * this.level.paths.length);
+        enemy.enable(pathIndex);
 
         this.nextEnemy = time + 2000;
       }
     }
   }
 
-  addBullet(x, y, angle) {
-    var bullet = this.bullets.getFirstDead();
+  addBullet(firedBy) {
+    let bullet = this.bullets.getFirstDead();
     if (!bullet) {
       bullet = new Bullet(this, 0, 0);
       this.bullets.add(bullet);
     }
-    bullet.fire(x, y, angle);
+    bullet.fire(firedBy);
   }
 
 }

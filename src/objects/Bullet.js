@@ -9,7 +9,7 @@ class Bullet extends Phaser.GameObjects.Image {
     this.speed = 800;
     this.damageDealt = 5;
     this.setScale(1 / 16)
-      .setTint(0xE8DB3B)
+      .setTint(0xAB41FF)
       .setSize(16, 16)
 
     // add the bullet to game
@@ -28,7 +28,11 @@ class Bullet extends Phaser.GameObjects.Image {
     }
   }
 
-  fire(x, y, angle) {
+  fire(firedBy) {
+    this.firedBy = firedBy;
+    let x = firedBy.x,
+      y = firedBy.y,
+      angle = firedBy.trackingAngle;
     this.setActive(true)
       .setVisible(true);
 

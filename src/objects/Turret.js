@@ -1,5 +1,5 @@
 class Turret extends Phaser.GameObjects.Image {
-  constructor(scene) {
+  constructor(scene, x, y) {
     super(scene, 0, 0, 'ball');
 
     let sizeVariance = 1; //0.8 + Math.random() * 0.4;
@@ -30,13 +30,12 @@ class Turret extends Phaser.GameObjects.Image {
   }
 
   place(i, j) {
-    // let offsetX = 0.8 + Math.random() * 0.4;
-    // let offsetY = 0.8 + Math.random() * 0.4;
-    this.y = i * 64 + 32;// * offsetY;
-    this.x = j * 64 + 32;// * offsetX;
+    this.y = i * 64 + 32;
+    this.x = j * 64 + 32;
     this.level.grid[i][j] = 1;
     this.scene.base.totalTurrets ++;
-    console.log(this.scene.base.totalTurrets);
+    this.kills = 0;
+    this.id = 'T'+Date.now();
   }
 
   track(time) {
@@ -52,7 +51,7 @@ class Turret extends Phaser.GameObjects.Image {
 
   fire() {
     if (this.enemyTracking){
-      this.scene.addBullet(this.x, this.y, this.trackingAngle);
+      this.scene.addBullet(this);
     }
   }
 

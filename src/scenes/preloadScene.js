@@ -19,8 +19,8 @@ class PreloadScene extends Phaser.Scene {
     this.createPreloader(width, height)
 
     // time event for logo
-    // TODO - update delayed call time to 3000
-    this.timedEvent = this.time.delayedCall(3, this.ready, [], this);
+    // TODO - update delayed call time to 2000
+    this.timedEvent = this.time.delayedCall(2, this.ready, [], this);
 
     this.loadAssets();
   }
@@ -97,8 +97,9 @@ class PreloadScene extends Phaser.Scene {
     // images
 
     this.load.image('brick', '../assets/brick-grad.png')
+    
     // for (let i = 0; i < 200; i++) {
-    //   this.load.image('ball'+i, '../assets/ball.png');
+    //   this.load.image('brick'+i, '../assets/brick-grad.png')
     // }
 
     // tile map
