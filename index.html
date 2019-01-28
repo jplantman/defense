@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Defense</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="assets/ball2.png">
+  <style media='screen' type='text/css'>
+    @font-face {
+      font-family: font1;
+      src: url('assets/BlackOpsOne-Regular.ttf');
+      font-weight: 400;
+      font-weight: normal;
+    }
+  </style>
+  <script src="assets/phaser.min.js"></script>
+</head>
+<body>
+  <div style="font-family:font1; position:absolute; left:-1000px; visibility:hidden;">.</div>
+
+  <!-- Scenes -->
+  <script src="src/scenes/bootScene.js"></script>
+  <script src="src/scenes/preloadScene.js"></script>
+  <script src="src/scenes/titleScene.js"></script>
+  <script src="src/scenes/gameScene.js"></script>
+  <script src="src/scenes/uiScene.js"></script>
+
+  <!-- Objects -->
+  <script src="src/objects/Base.js"></script>
+  <script src="src/objects/Bullet.js"></script>
+  <script src="src/objects/Enemy.js"></script>
+  <script src="src/objects/Turret.js"></script>
+
+  <!-- Game -->
+  <script src="src/config/config.js"></script>
+  <script src="src/index.js"></script>
+</body>
+</html>
