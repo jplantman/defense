@@ -13,8 +13,8 @@ class TitleScene extends Phaser.Scene {
   }
 
   createTitle(){
-    this.titleText = this.add.text(0, 0, 'Defense', 
-      {font: '40px monospace', fill: '#eeeeee' })
+    this.titleText = this.add.text(0, 0, 'Blips TD', 
+      {font: '40px font1', fill: '#eeeeee' })
       .setOrigin(0.5, 0.5);
       this.centerObject(this.titleText, 1);
 
@@ -36,7 +36,7 @@ class TitleScene extends Phaser.Scene {
     this.centerObject(this.gameButton, -1);
 
     this.gameText = this.add.text(0, 0, 'Play', {
-      fontSize: '32px',
+      font: '32px font1',
       fill: '#ffffff'
     })
     Phaser.Display.Align.In.Center(

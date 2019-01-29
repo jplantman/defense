@@ -15,11 +15,20 @@ class GameScene extends Phaser.Scene {
     for (let i = 0; i < 10 * this.level.scaleFactor; i++) {
       this.level.grid[i] = [];
       for (let k = 0; k < 10 * this.level.scaleFactor; k++) {
-        this.level.grid[i].push(0);
+        // block out middle 4 squares
+        let midk = (k == 5 * this.level.scaleFactor || k == 5 * this.level.scaleFactor - 1);
+        let midi = (i == 5 * this.level.scaleFactor || i == 5 * this.level.scaleFactor - 1);
+        if (midk && midi){
+          this.level.grid[i].push(1);
+          // console.log('middle detected at: ', i, k)
+        } else {
+          this.level.grid[i].push(0);
+        }
       }
     }
     this.nextEnemy = 1000;
     this.score = 0;
+    this.selectedStructure = null;
 
     // world bounds
     let num = 640 * this.level.scaleFactor;
@@ -31,6 +40,15 @@ class GameScene extends Phaser.Scene {
 
   create() {
     console.log(this);
+
+    this.bg = this.add.graphics()
+      .fillStyle(0x000000, 1)
+      .fillRect(0, 0, 640*this.level.scaleFactor, 640*this.level.scaleFactor)
+      .setInteractive()
+      .setDepth(-2)
+      .on('pointerdown', function(pointer){
+        console.log('test')
+      })
 
     this.camSprite = this.physics.add.sprite( 
       this.cameras.main.midPoint.x,
@@ -46,11 +64,16 @@ class GameScene extends Phaser.Scene {
     this.setupCollisions();
     this.controls = new Controls(this);
 
+    this.showBuyingMenu();
+
+    this.turretsAvailable = 0;
+    this.events.emit('updateMoney', this.base.money);
   }
 
   update(time, delta) {
     this.makeEnemies(time);
     this.controls.updateCamera();
+    this.base.update(time, delta);
   }
 
   createGroups() {
@@ -78,7 +101,9 @@ class GameScene extends Phaser.Scene {
     bullet.disable();
     if (exp){
       this.base.exp += 5;
+      this.base.money += 1;
       this.events.emit('updateExp', this.base.exp);
+      this.events.emit('updateMoney', this.base.money);
       bullet.firedBy.kills++;
       // console.log('turret id : kills', bullet.firedBy.id, bullet.firedBy.kills )
     }
@@ -167,21 +192,17 @@ class GameScene extends Phaser.Scene {
     this.camSprite.y = this.base.y;
   }
 
-  placeTurret(pointer) {
-    var i = Math.floor((pointer.worldY) / 64);
-    var j = Math.floor((pointer.worldX) / 64); 
-
-    if (this.canPlaceTurret(i, j)) {
-      var turret = this.turrets.getFirstDead();
-      if (!turret) {
-        turret = new Turret(this, 0, 0, this.map);
-        this.turrets.add(turret);
-      }
-      turret.setActive(true)
-        .setVisible(true);
-      turret.place(i, j);
-      // TODO - limit number of turrets
+  placeTurret(pointer, i, j) {
+    this.deselectStructure();
+    var turret = this.turrets.getFirstDead();
+    if (!turret) {
+      turret = new Turret(this, 0, 0, this.map);
+      this.turrets.add(turret);
     }
+    turret.setActive(true)
+      .setVisible(true)
+      .place(i, j);
+    this.selectStructure(turret);
   }
 
   canPlaceTurret(i, j, level) {
@@ -252,6 +273,99 @@ class GameScene extends Phaser.Scene {
       this.bullets.add(bullet);
     }
     bullet.fire(firedBy);
+  }
+
+  deselectStructure() {
+    if (this.selectedStructure) {
+      this.selectedStructure
+        .isSelected = false;
+      this.events.emit('highlighterHide');
+      this.events.emit('hideNameDisplay');
+      this.events.emit('hideAdditionalDisplay'); 
+      this.events.emit('hideButtons');
+    };
+    this.selectedStructure = null;
+  }
+
+  selectStructure(structure) {
+    // this.deselectStructure();
+    this.events.emit('highlighterSet', structure.x, structure.y, structure.highlighterScale);
+    this.events.emit(
+      'showNameDisplay', 
+      structure.name +' '+ (structure.id || '') + '\n'
+    );
+    this.events.emit(
+      'showAdditionalDisplay',
+      'Kills: ' + structure.kills + '\n' +
+      'Upgrades: ' + structure.upgradeCount + '\n' +
+      'Upgrade Cost: '
+    ); 
+    this.events.emit('showButtons', [
+      { text: 'damage: ' + structure.damageDealt,
+        func: function(){
+          structure.upgradeCount++;
+          structure.damageDealt+=2;
+          this.selectStructure(structure);
+        }.bind(this)
+      },
+      {
+        text: 'Fire Rate: ' + structure.fireRateMod,
+        func: function () {
+          structure.upgradeCount++;
+          structure.fireRateMod += 5;
+          this.selectStructure(structure);
+        }.bind(this)
+      },
+      {
+        text: 'Range: ' + structure.range,
+        func: function () {
+          structure.upgradeCount++;
+          structure.range += 10;
+          this.selectStructure(structure);
+        }.bind(this)
+      },
+      {
+        text: 'Bullet Size: ' + structure.bulletSizeMod,
+        func: function () {
+          structure.upgradeCount++;
+          structure.bulletSizeMod += 0.25;
+          this.selectStructure(structure);
+        }.bind(this)
+      },
+      {
+        text: 'Bullet Speed: ' + structure.bulletSpeed,
+        func: function () {
+          structure.upgradeCount++;
+          structure.bulletSpeed += 75;
+          this.selectStructure(structure);
+        }.bind(this)
+      },
+      {
+        text: 'Bullet Lifespan: ' + structure.bulletLifespan,
+        func: function () {
+          structure.upgradeCount++;
+          structure.bulletLifespan += 50;
+          this.selectStructure(structure);
+        }.bind(this)
+      },
+    ]);
+    structure.isSelected = true;
+    this.selectedStructure = structure;
+  }
+
+  showBuyingMenu() {
+    this.events.emit('showButtons', [
+      {
+        text: 'Buy Blip: $50',
+        func: function () {
+          if (this.base.money >= 50){
+            this.base.money -= 50;
+            this.events.emit('updateMoney', this.base.money); 
+            this.turretsAvailable++ 
+          };
+        }.bind(this)
+      }
+    ]);
   }
 
 }

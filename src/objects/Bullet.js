@@ -8,9 +8,10 @@ class Bullet extends Phaser.GameObjects.Image {
     this.lifespan = 0;
     this.speed = 800;
     this.damageDealt = 5;
-    this.setScale(1 / 16)
+    this
       .setTint(0xAB41FF)
-      .setSize(16, 16)
+      // .setSize(16, 16)
+      // .setScale(1 / 16)
 
     // add the bullet to game
     this.scene.add.existing(this);
@@ -30,18 +31,22 @@ class Bullet extends Phaser.GameObjects.Image {
 
   fire(firedBy) {
     this.firedBy = firedBy;
+    this.speed = firedBy.bulletSpeed || 800;
+    this.damageDealt = firedBy.damageDealt || 5;
     let x = firedBy.x,
       y = firedBy.y,
       angle = firedBy.trackingAngle;
     this.setActive(true)
-      .setVisible(true);
+      .setVisible(true)
+      .setSize(16, 16 * (firedBy.bulletSizeMod || 1) )
+      .setScale(1 / 16 * (firedBy.bulletSizeMod || 1) )
 
     // update pos of bulllet
     this.setPosition(x, y);
     this.dx = Math.cos(angle);
     this.dy = Math.sin(angle);
 
-    this.lifespan = 300;
+    this.lifespan = firedBy.bulletLifespan || 300;
   }
 
   disable() { // TODO - make this better

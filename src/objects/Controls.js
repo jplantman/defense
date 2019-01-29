@@ -9,6 +9,8 @@ class Controls {
       this.pointerMove(pointer)
     }.bind(this))
 
+    // this.createUIButtons();
+
     this.scene.input.on('pointerdown', this.pointerDown);
     this.scene.input.on('pointerup', this.pointerUp);
 
@@ -19,7 +21,7 @@ class Controls {
     var i = Math.floor( (pointer.worldY) / 64); 
     var j = Math.floor( (pointer.worldX) / 64); 
 
-    if (!pointer.isDown && this.scene.canPlaceTurret(i, j)) {
+    if ( this.scene.turretsAvailable && !pointer.isDown && this.scene.canPlaceTurret(i, j)) {
       this.scene.cursor.setPosition(j * 64 + 32, i * 64 + 32)
         .setAlpha(0.3);
     } else {
@@ -33,12 +35,23 @@ class Controls {
     }
   }
   pointerDown(pointer) {
-    console.log(Math.round(pointer.worldX/100)*100, Math.round(pointer.worldY/100)*100)
+    // this helps to make the lines up
+    // console.log(Math.round(pointer.worldX/100)*100, Math.round(pointer.worldY/100)*100)
   }
   pointerUp(pointer) {
     if(pointer.upTime - pointer.downTime < 150)
     {
-      this.scene.placeTurret(pointer);
+      var i = Math.floor((pointer.worldY) / 64);
+      var j = Math.floor((pointer.worldX) / 64);
+      if (this.scene.canPlaceTurret(i, j)) {
+        if (this.scene.turretsAvailable) {
+          this.scene.placeTurret(pointer, i, j);
+          this.scene.turretsAvailable--;
+        } else {
+          this.scene.deselectStructure();
+          this.scene.showBuyingMenu();
+        }
+      }
     }
   }
 
@@ -103,7 +116,5 @@ class Controls {
   zoomOut() {
     this.scene.cameras.main.zoom = Math.max(0.3, this.scene.cameras.main.zoom - 0.1);
   }
-
-
 
 }

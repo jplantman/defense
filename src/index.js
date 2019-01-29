@@ -18,39 +18,59 @@ window.onload = function () {
 }
 
 /*  DO NEXT:
+  make ui buttons for choosing upgrade options n such:
 
-  - make multiple different colored teams, with a path for each
-    - paths can be angled, build even on path, 
-    - paths procedurally generated, and can change during the game
+  [+] damage
+  [+] fire rate
+  [+] range
+  [+] bullet speed
+  [+] bullet lifetime
+  [+] bullet size
 
-  - zoom up and down with keyboard or mousewheel
+  base only:
+  [+] health
+  [+] armor
+  [+] recover
 
-  - drag world to move cam
-  
-  - select system for base and turrets
-    - system to upgrade base turrets
-    - base shoots, heals over time, has armor, etc. hivemind style
-    - minimap
+  ideas:
+  [+] profit multiplier
+  [+] shoot more bullets, or other ammo 
+  [+] support towers, which help other towers
 
-  - make a ui panel, where turrets can be bought
+ALSO DO:
 
-  - big exciting enemy waves, new enemies, difficulty ramps up in an endless level style
-    - example events loop:
-      1 some enemies come
-      2 a big wave is approaching!
-      3 some enemies come
-      4 the paths are changing! 
-      ...
-      a color path is being added!
+- stats appear as bars, not numbers
 
+- add cool particle emitter and camera effects
+ 
+- minimap?
 
-  FAR OFF IDEAS:
+- enemy spawn manager:
+big exciting enemy waves, new enemies, difficulty ramps up in an endless level style
+  - example events loop:
+    1 some enemies come
+    2 a big wave is approaching!
+    3 some enemies come
+    4 the paths are changing! 
+      --(make em procedurally generated or something)
+    ...
+    a color path is being added!
 
-  - 3D camera view
+  - awesome psychadelic music and sounds
+
+  - options to make the game more automatic / idle-y ??
+    like 
+      -auto upgrade options or something?
+
+  - complete options menu
+
+  FAR OFF IDEAS / THINGS TO TRY:
+
+  - 3D version of the game
   - add collecting resources 
   - building non-turret defenders
   - controlled main hero
-  - hotkeys
   - enemies shoot back, fight back in more ways
+  - basically turn it more starcraft like, wc3 like, or dota like
 
 */
