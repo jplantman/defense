@@ -40,13 +40,13 @@ class Enemy extends Phaser.GameObjects.Image {
       .setVisible(false);
   }
 
-  enable(pathIndex) {
+  enable(pathIndex, data) {
     // reset enemy
     this.pathIndex = pathIndex;
     this.setTint( this.level.paths[pathIndex].color );
     this.path = this.scene.paths[pathIndex];
-    this.hp = 80;
-    this.enemySpeed = 5 / 100000;
+    this.hp = data.hp || 20;
+    this.enemySpeed = 1 / 100000 * ( data.speed || 5 );
     this.follower.t = 0;
 
     // get x and y at t == 0

@@ -18,59 +18,55 @@ window.onload = function () {
 }
 
 /*  DO NEXT:
-  make ui buttons for choosing upgrade options n such:
 
-  [+] damage
-  [+] fire rate
-  [+] range
-  [+] bullet speed
-  [+] bullet lifetime
-  [+] bullet size
+  - buttons you cant afford or click are 'disabled'
 
-  base only:
-  [+] health
-  [+] armor
-  [+] recover
+  - effects manager class for cool particle emitter and camera effects
 
-  ideas:
-  [+] profit multiplier
-  [+] shoot more bullets, or other ammo 
-  [+] support towers, which help other towers
+  - path manager class
 
-ALSO DO:
+  - upgrades manager class
 
-- stats appear as bars, not numbers
+  - different turret sub classes
 
-- add cool particle emitter and camera effects
- 
-- minimap?
+  - music manager class with tonejs
+  
+      =       =
+  =       =
+    =   =   =  =
 
-- enemy spawn manager:
-big exciting enemy waves, new enemies, difficulty ramps up in an endless level style
-  - example events loop:
-    1 some enemies come
-    2 a big wave is approaching!
-    3 some enemies come
-    4 the paths are changing! 
-      --(make em procedurally generated or something)
-    ...
-    a color path is being added!
+      =         =
+       =      =
+  ====  ====== 
 
-  - awesome psychadelic music and sounds
+  - options manager class
 
-  - options to make the game more automatic / idle-y ??
-    like 
-      -auto upgrade options or something?
+  - make base and turrets more 'lifelike'. ways:
+    - game starts with base 'breathing', enemy paths set up to attack base
+    - base grows as you level up
+    - turrets must hatch before becoming active, and also 'breathe'
 
-  - complete options menu
+  - different kinds of turret classes, which inheret from turret.
+    - they have different images, with different cannons that look like diep.io tanks
+    - they have different behaviors and effects
+
+  - highlighter shows range
+
+  - managing and choosing good colors
+
+  - balancing and testing and polishing
+
+  - consider making better images, such as 'armored overlord blip'
 
   FAR OFF IDEAS / THINGS TO TRY:
 
   - 3D version of the game
   - add collecting resources 
   - building non-turret defenders
+  - multiplayer, send your own blips to attack other player's bases
   - controlled main hero
   - enemies shoot back, fight back in more ways
   - basically turn it more starcraft like, wc3 like, or dota like
+    OR more idle like, with more auto-control options
 
 */

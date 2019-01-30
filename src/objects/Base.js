@@ -32,7 +32,7 @@ class Base extends Phaser.GameObjects.Image {
     this.fireRateMod = 0;
 
     this.kills = 0;
-    this.damageDealt = 10;
+    this.damageDealt = 5;
     this.range = 300;
     this.bulletLifespan = 500;
     this.bulletSpeed = 1000;

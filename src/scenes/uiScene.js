@@ -19,28 +19,36 @@ class UIScene extends Phaser.Scene {
     let style = { fontSize: '18px', fill: '#e4e4e4', fontFamily: 'font1' };
 
     this.baseText = this.add.text(
-      12, 
-      12, 
-      'Base: 100', style)
-      .setOrigin(0, 0)
-      .setDepth(1)
+      320, 
+      25, 
+      'HP', style)
+      .setOrigin(0.5, 0.5)
+      .setDepth(2)
       .setAlpha(0);
 
     this.expText = this.add.text(
-      12,
-      34, 
-      'Exp: 0', style)
-      .setOrigin(0, 0)
-      .setDepth(1)
+      320,
+      55, 
+      'Exp', { fontSize: '14px', fill: '#e4e4e4', fontFamily: 'font1' } )
+      .setOrigin(0.5)
+      .setDepth(2)
       .setAlpha(0);
 
     this.moneyText = this.add.text(
       12,
-      56,
-      'Money: $ 100', style)
+      12,
+      'Money:\n $ 100', style)
       .setOrigin(0, 0)
       .setDepth(1)
       .setAlpha(0);
+
+    this.announceText = this.add.text(
+      320,
+      220,
+      '', { fontSize: '30px', fill: '#e4e4e4', fontFamily: 'font1' })
+      .setOrigin(0.5, 0.5)
+      .setDepth(1)
+      .setAlpha(0)
   }
 
   createPanel() {
@@ -56,6 +64,46 @@ class UIScene extends Phaser.Scene {
         .setTint(0xE8DB3B)
         .setInteractive()
         .setOrigin(0, 1);
+
+      // health bar back
+      this.healthBarBack = this.add.image(
+        320 - 128, 10, 'brick')
+        .setScrollFactor(0)
+        .setScale(4, 1)
+        .setOrigin(0, 0)
+        .setDepth(1)
+        .setAlpha(0)
+        .setTint("0xE8DB3B")
+        
+        // health bar
+      this.healthBar = this.add.image(
+        320-125, 12, 'brick')
+        .setScrollFactor(0)
+        .setScale(3.9, 0.9)
+        .setOrigin(0, 0)
+        .setDepth(1)
+        .setAlpha(0)
+        .setTint(0xAB41FF)
+
+      // Exp bar back
+      this.expBarBack = this.add.image(
+        320 - 128, 47, 'brick')
+        .setScrollFactor(0)
+        .setScale(4, 0.5)
+        .setOrigin(0, 0)
+        .setDepth(1)
+        .setAlpha(0)
+        .setTint("0xE8DB3B")
+
+      // Exp bar
+      this.expBar = this.add.image(
+        320 - 125, 49, 'brick')
+        .setScrollFactor(0)
+        .setScale(3.9, 0.4)
+        .setOrigin(0, 0)
+        .setDepth(1)
+        .setAlpha(0)
+        .setTint(0x305DE8)
       
       // ui buttons 
       this.createUIButtons();
@@ -95,7 +143,12 @@ class UIScene extends Phaser.Scene {
       this.createPanel()
       this.baseText.setAlpha(1);
       this.expText.setAlpha(1);
-      this.moneyText.setAlpha(1);
+      this.moneyText.setAlpha(1)
+      this.healthBar.setAlpha(1);
+      this.healthBarBack.setAlpha(1);
+      this.expBar.setAlpha(1);
+      this.expBarBack.setAlpha(1);
+      this.announceText.setAlpha(1);
     }.bind(this));
 
     this.gameScene.events.on('hideUI', function () {
@@ -103,14 +156,21 @@ class UIScene extends Phaser.Scene {
       this.expText.setAlpha(0);
       this.panel.setAlpha(0);
       this.moneyText.setAlpha(0);
+      this.healthBar.setAlpha(0);
+      this.healthBarBack.setAlpha(0);
+      this.expBar.setAlpha(0);
+      this.expBarBack.setAlpha(0);
+      this.announceText.setAlpha(0);
     }.bind(this));
 
     this.gameScene.events.on('updateScore', function (health) {
-      this.baseText.setText('Base: ' + health);
+      // this.baseText.setText('Base: ' + health);
+      this.healthBar.setScale(3.9*health/100, 0.9)
     }.bind(this));
 
     this.gameScene.events.on('updateExp', function (exp) {
-      this.expText.setText('Exp: ' + exp);
+      // this.expText.setText('Exp: ' + exp);
+      this.expBar.setScale(3.9 * 1, 0.4)
     }.bind(this));
 
     this.gameScene.events.on('updateMoney', function (money) {
@@ -147,6 +207,21 @@ class UIScene extends Phaser.Scene {
 
     this.gameScene.events.on('hideAdditionalDisplay', function (data) {
       this.hideAdditionalDisplay(data);
+    }.bind(this));
+
+    this.gameScene.events.on('announcement', function (message) {
+      this.announceText.setText(message);
+      let id = this.announceText.messageId = Date.now();
+      let timedEvent = this.time.addEvent(
+        { 
+          delay: 3000, 
+          callback: function(){
+            if (this.announceText.messageId == id){
+              this.announceText.setText('');
+            }
+          }, 
+          callbackScope: this 
+        });
     }.bind(this));
   }
 
